@@ -2,4 +2,7 @@ name: ${project.artifactId}
 main: ${javaplugin.path}
 version: ${project.version}
 api-version: 1.17
-depend: []
+depend: [WraithLib]
+commands:
+  ar:
+    description: AR menu commands.
