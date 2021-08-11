@@ -1,0 +1,5 @@
+name: ${project.artifactId}
+main: ${javaplugin.path}
+version: ${project.version}
+api-version: 1.17
+depend: []
