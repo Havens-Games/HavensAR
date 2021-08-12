@@ -25,6 +25,10 @@
       <id>papermc</id>
       <url>https://papermc.io/repo/repository/maven-public/</url>
     </repository>
+    <repository>
+      <id>jitpack-repo</id>
+      <url>https://jitpack.io</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -40,6 +44,12 @@
       <version>${wraithlib.version}</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/../WraithLib/target/WraithLib-${wraithlib.version}.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.github.LoneDev6</groupId>
+      <artifactId>api-itemsadder</artifactId>
+      <version>2.4.7</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

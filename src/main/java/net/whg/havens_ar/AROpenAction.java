@@ -14,6 +14,11 @@ public class AROpenAction extends Subcommand {
     public void execute(CmdPlayer sender, String[] args) throws CommandException {
         if (!sender.isPlayer())
             throw new NoConsoleException("You must be a player to preform this command!");
+
+        var menu = new ARMenu(sender.getPlayer());
+        new ARMenuOption(menu);
+
+        sender.sendConfirmation("Menu opened.");
     }
 
     @Override

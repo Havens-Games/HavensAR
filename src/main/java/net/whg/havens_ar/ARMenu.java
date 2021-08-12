@@ -2,6 +2,7 @@ package net.whg.havens_ar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 public class ARMenu implements Listener {
     private final List<ARMenuOption> options = new ArrayList<>();
     private final Player player;
+    private final UUID uuid;
     private boolean valid = true;
 
     /**
@@ -30,8 +32,12 @@ public class ARMenu implements Listener {
     public ARMenu(Player player) {
         this.player = player;
 
+        uuid = UUID.randomUUID();
+
         var plugin = Bukkit.getPluginManager().getPlugin("HavensAR");
         Bukkit.getPluginManager().registerEvents(this, plugin);
+
+        HavensAR.logInfo("Opened menu for %s. (UUID: %s)", player.getName(), uuid);
     }
 
     /**
@@ -39,8 +45,12 @@ public class ARMenu implements Listener {
      * called by ARMenuOption instances.
      * 
      * @param option - The menu option to add.
+     * @throws IllegalStateException If this menu has already been closed.
      */
     void addOption(ARMenuOption option) {
+        if (!valid)
+            throw new IllegalStateException("Menu is not valid!");
+
         options.add(option);
     }
 
@@ -60,6 +70,11 @@ public class ARMenu implements Listener {
      * this menu.
      */
     public void closeInstance() {
+        if (!valid)
+            return;
+
+        HavensAR.logInfo("Closing menu for %s. (UUID: %s, Options: %s)", player.getName(), uuid, options.size());
+
         valid = false;
         for (var option : new ArrayList<>(options))
             option.dispose();
@@ -122,5 +137,14 @@ public class ARMenu implements Listener {
 
         for (var option : options)
             option.updatePositions();
+    }
+
+    /**
+     * Gets the UUID of this menu instance.
+     * 
+     * @return The UUID;
+     */
+    public UUID getUUID() {
+        return uuid;
     }
 }
