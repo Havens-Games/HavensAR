@@ -132,7 +132,7 @@ public class ARMenu implements Listener {
      */
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        if (e.getPlayer() != e)
+        if (e.getPlayer() != player)
             return;
 
         for (var option : options)
