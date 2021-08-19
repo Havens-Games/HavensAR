@@ -16,7 +16,7 @@ public class AROpenAction extends Subcommand {
             throw new NoConsoleException("You must be a player to preform this command!");
 
         var menu = new ARMenu(sender.getPlayer());
-        new ARMenuOption(menu);
+        new HoloBox(menu);
 
         sender.sendConfirmation("Menu opened.");
     }

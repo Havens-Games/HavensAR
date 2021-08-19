@@ -13,19 +13,25 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import net.whg.utils.math.Quaternion;
+import net.whg.utils.math.Transform;
+import net.whg.utils.math.Vec3f;
+
 /**
  * Represents an active menu instance that is currently being displayed to a
  * player.
  */
 public class ARMenu implements Listener {
-    private final List<ARMenuOption> options = new ArrayList<>();
+    private final List<ARMenuComponent> components = new ArrayList<>();
+    private final Transform transform = new Transform();
     private final Player player;
     private final UUID uuid;
     private boolean valid = true;
 
     /**
      * Creates a new ARMenu. This will also register this menu to begin listening
-     * for relevant events.
+     * for relevant events. This will create the menu centered around the player's
+     * current position and rotation.
      * 
      * @param player - The player that is looking at this menu.
      */
@@ -33,6 +39,7 @@ public class ARMenu implements Listener {
         this.player = player;
 
         uuid = UUID.randomUUID();
+        moveMenuToPlayer(true);
 
         var plugin = Bukkit.getPluginManager().getPlugin("HavensAR");
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -41,42 +48,44 @@ public class ARMenu implements Listener {
     }
 
     /**
-     * Adds a new menu option to this menu instance. This method should only be
+     * Adds a new menu component to this menu instance. This method should only be
      * called by ARMenuOption instances.
      * 
-     * @param option - The menu option to add.
+     * @param component - The menu component to add.
      * @throws IllegalStateException If this menu has already been closed.
      */
-    void addOption(ARMenuOption option) {
+    void addOption(ARMenuComponent component) {
         if (!valid)
             throw new IllegalStateException("Menu is not valid!");
 
-        options.add(option);
+        components.add(component);
+        component.getTransform().setParent(transform);
     }
 
     /**
-     * Removes a menu option from this menu instance. This method should only be
+     * Removes a menu component from this menu instance. This method should only be
      * called by ARMenuOption instances.
      * 
-     * @param option - The menu option to remove.
+     * @param component - The menu component to remove.
      */
-    void removeOption(ARMenuOption option) {
-        options.remove(option);
+    void removeOption(ARMenuComponent component) {
+        components.remove(component);
+        component.getTransform().setParent(null);
     }
 
     /**
-     * Closes this menu instance and disposes all contained menu options. Marks this
-     * menu instance as invalid. This will also remove all listeners attached to
-     * this menu.
+     * Closes this menu instance and disposes all contained menu components. Marks
+     * this menu instance as invalid. This will also remove all listeners attached
+     * to this menu.
      */
     public void closeInstance() {
         if (!valid)
             return;
 
-        HavensAR.logInfo("Closing menu for %s. (UUID: %s, Options: %s)", player.getName(), uuid, options.size());
+        HavensAR.logInfo("Closing menu for %s. (UUID: %s, Options: %s)", player.getName(), uuid, components.size());
 
         valid = false;
-        for (var option : new ArrayList<>(options))
+        for (var option : new ArrayList<>(components))
             option.dispose();
 
         HandlerList.unregisterAll(this);
@@ -135,8 +144,23 @@ public class ARMenu implements Listener {
         if (e.getPlayer() != player)
             return;
 
-        for (var option : options)
-            option.updatePositions();
+        moveMenuToPlayer(false);
+    }
+
+    /**
+     * Moves the menu to the player's current position.
+     * 
+     * @param rotate - Whether or not to also change the menu's yaw rotation.
+     */
+    private void moveMenuToPlayer(boolean rotate) {
+        var location = player.getLocation();
+        var pos = new Vec3f((float) location.getX(), (float) location.getY(), (float) location.getZ());
+        transform.setLocalPosition(pos);
+
+        if (rotate) {
+            var rot = Quaternion.euler(location.getYaw(), 0, 0);
+            transform.setLocalRotation(rot);
+        }
     }
 
     /**
