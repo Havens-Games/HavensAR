@@ -59,7 +59,6 @@ public class ARMenu implements Listener {
             throw new IllegalStateException("Menu is not valid!");
 
         components.add(component);
-        component.getTransform().setParent(transform);
     }
 
     /**
@@ -70,7 +69,6 @@ public class ARMenu implements Listener {
      */
     void removeOption(ARMenuComponent component) {
         components.remove(component);
-        component.getTransform().setParent(null);
     }
 
     /**
@@ -170,5 +168,16 @@ public class ARMenu implements Listener {
      */
     public UUID getUUID() {
         return uuid;
+    }
+
+    /**
+     * Gets the transform for this menu. Note that this transform's movement is
+     * handled internally. As such, any modifications to it will be recalculated.
+     * This is for reference only.
+     * 
+     * @return This menu's transform.
+     */
+    public Transform getTransform() {
+        return transform;
     }
 }

@@ -1,5 +1,6 @@
 package net.whg.havens_ar;
 
+import net.whg.havens_ar.impl.Banner;
 import net.whg.utils.cmdformat.Subcommand;
 import net.whg.utils.exceptions.CommandException;
 import net.whg.utils.exceptions.NoConsoleException;
@@ -16,7 +17,7 @@ public class AROpenAction extends Subcommand {
             throw new NoConsoleException("You must be a player to preform this command!");
 
         var menu = new ARMenu(sender.getPlayer());
-        new HoloBox(menu);
+        new Banner(menu, "default");
 
         sender.sendConfirmation("Menu opened.");
     }

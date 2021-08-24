@@ -20,18 +20,14 @@ public abstract class ARMenuEntityComponent extends ARMenuComponent {
         super(menu);
 
         var transform = getTransform();
-        transform.setLocalPosition(new Vec3f(0, 0, -3f));
-        transform.setLocalRotation(Quaternion.euler(180, 0, 0));
+        transform.setLocalPositionAndRotation(new Vec3f(0, 0, -3f), Quaternion.euler(0, 0, 0));
     }
 
     @Override
     protected void display() {
-        var menu = getMenu();
-        var player = menu.getPlayer();
-        var world = player.getWorld();
-        var location = player.getLocation();
+        var location = getTargetLocation();
 
-        entity = (ArmorStand) world.spawnEntity(location, EntityType.ARMOR_STAND);
+        entity = (ArmorStand) location.getWorld().spawnEntity(location, EntityType.ARMOR_STAND);
         entity.setGravity(false);
         entity.setInvulnerable(true);
         entity.setVisible(false);
@@ -41,14 +37,24 @@ public abstract class ARMenuEntityComponent extends ARMenuComponent {
 
     @Override
     protected void updatePosition() {
+        var location = getTargetLocation();
+        entity.teleport(location);
+    }
+
+    /**
+     * Gets the target location for where this entity should be placed based on the
+     * current transform state.
+     * 
+     * @return The target location for this menu component's entity.
+     */
+    private Location getTargetLocation() {
         var transform = getTransform();
         var world = getMenu().getPlayer().getWorld();
 
         var pos = transform.getWorldPosition();
         var rot = transform.getWorldRotation();
 
-        var location = new Location(world, pos.x, pos.y, pos.z, rot.getYaw(), rot.getPitch());
-        entity.teleport(location);
+        return new Location(world, pos.x, pos.y, pos.z, rot.getYaw(), rot.getPitch());
     }
 
     @Override

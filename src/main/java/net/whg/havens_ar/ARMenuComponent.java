@@ -1,5 +1,8 @@
 package net.whg.havens_ar;
 
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
+
 import net.whg.utils.math.Transform;
 
 /**
@@ -20,15 +23,19 @@ public abstract class ARMenuComponent {
         this.menu = menu;
         menu.addOption(this);
 
-        display();
-        updatePosition();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                display();
 
-        transform.addListener(a -> {
-            if (disposed)
-                return;
+                transform.addListener(a -> {
+                    if (disposed)
+                        return;
 
-            updatePosition();
-        });
+                    updatePosition();
+                });
+            }
+        }.runTaskLater(Bukkit.getPluginManager().getPlugin("HavensAR"), 1);
     }
 
     /**
